@@ -1,0 +1,35 @@
+# Xcode
+.DS_Store
+.codex_audit/
+.build/
+*.swiftpm
+.swiftpm/
+xcuserdata/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+
+# Swift Package Manager
+Packages/
+Package.pins
+
+# macOS
+.AppleDouble
+.LSOverride
+
+# Build products
+*.o
+*.lo
+*.obj
+*.dylib
+
+# Swift specific
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Temporary files
+*~
+*.swp
+*.swo

@@ -2,39 +2,27 @@
 
 A macOS text expansion utility for managing and quickly inserting code snippets and canned responses.
 
-## What This Does
+## What It Does
 
 Save time by creating reusable text snippets with full-text search. Press a global hotkey, search your library, and instantly insert the snippet into any app.
 
 **Target**: IT Support Engineers typing 20-30 responses daily. Saves ~37 min/day.
 
-## Current Status: Phase 4 Complete ✓
+## Current Features
 
-**What works now:**
-- ✅ Phase 0: SQLite database, CRUD, tag management
-- ✅ Phase 1: Menu bar app with global hotkey (Cmd+Shift+Space)
-  - Floating search panel with keyboard navigation
-  - Text insertion via clipboard + Cmd+V simulation
-  - Permission handling (Input Monitoring + Accessibility)
-- ✅ Phase 2: FTS5 search intelligence
-  - Ranked full-text search (exact title > title contains > content)
-  - Multi-word queries ("authentication reset" finds both)
-  - Language filtering (Swift, Python, Bash, SQL, etc.)
-  - "Recently Used" section for quick access
-- ✅ Phase 3: Ollama semantic search
-  - Local LLM embeddings via Ollama (nomic-embed-text)
-  - Semantic search with cosine similarity ranking
-  - Automatic embedding generation on snippet save
-  - Settings UI for endpoint, model selection, enable/disable
-  - Graceful fallback to FTS5 when Ollama unavailable
-- ✅ Phase 4: Polish & productivity features
-  - JSON import/export with merge or replace options
-  - Launch at login via SMAppService (macOS 13+)
-  - Syntax highlighting in snippet detail view (Highlightr)
-  - Auto-switches theme based on system appearance
-  - 28/28 tests passing
+- Menu bar app with global hotkey (`Cmd+Shift+Space`)
+- Floating search panel with keyboard navigation
+- Text insertion via clipboard save/restore + simulated paste
+- SQLite-backed snippet CRUD and tag management
+- FTS5 ranked search (title/content weighting, multi-word queries)
+- Language filtering and Recently Used shortcuts
+- Optional local semantic search via Ollama embeddings
+- JSON import/export (merge or replace)
+- Launch at login support (macOS 13+)
+- Syntax highlighting in snippet detail view (Highlightr)
 
-**Future enhancements:**
+## Planned Enhancements
+
 - Auto-update (Sparkle framework)
 - SQLCipher encryption for sensitive snippets
 - App context detection (filter snippets by active app)
@@ -55,6 +43,9 @@ swift build
 # Run tests
 swift test
 
+# Clean generated files
+bash scripts/clean.sh
+
 # Dependency vulnerability audit (OSV)
 python3 scripts/audit_dependencies.py
 
@@ -62,16 +53,24 @@ python3 scripts/audit_dependencies.py
 swift run
 ```
 
+## Maintenance
+
+- Use `bash scripts/clean.sh` to remove generated/local artifacts (`.build`, `.codex_audit`, `.DS_Store`, `__pycache__`) when the repo feels cluttered.
+- After cleaning, run `swift build` and `swift test` to regenerate build outputs and confirm everything is healthy.
+- Use `python3 scripts/audit_dependencies.py` occasionally to check pinned dependency revisions against OSV.
+
 ## Project Structure
 
 ```
 SnippetLibrary/
 ├── Models/                  # GRDB records (Snippet, Tag, SnippetTag)
 ├── Database/                # AppDatabase, SnippetRepository, migrations
-├── Services/                # (Phase 1+) HotkeyService, PasteService, PermissionService
+├── Services/                # HotkeyService, PasteService, Import/Export, Ollama, etc.
 ├── Views/
-│   └── Management/          # Snippet list, editor, detail views
-└── Utilities/               # (Future) Constants, Logger
+│   ├── Management/          # Snippet list, editor, detail views
+│   ├── SearchPanel/         # Floating global search UI
+│   └── Settings/            # Ollama + app settings
+└── SnippetLibraryApp.swift  # App entrypoint
 ```
 
 ## Database Schema
@@ -86,26 +85,6 @@ SnippetLibrary/
 - snippetId, tagId (many-to-many relationship)
 
 Database location: `~/Library/Application Support/SnippetLibrary/snippets.sqlite`
-
-## Phase 0 Verification Checklist
-
-- [x] Project builds successfully
-- [x] All 10 unit tests pass
-- [x] Can create a snippet via UI
-- [x] Can view snippet list
-- [x] Can edit snippet
-- [x] Can delete snippet
-- [x] Can search/filter snippets
-- [x] Data persists after app restart
-- [x] Special characters (emoji, newlines) preserved
-
-## Next Steps (Phase 1)
-
-1. Convert to menu bar app (MenuBarExtra, LSUIElement=YES)
-2. Create FloatingPanel (NSPanel) for search UI
-3. Implement CGEventTap for global hotkey
-4. Implement PasteService (clipboard save/restore + Cmd+V simulation)
-5. Add permission handling UI for Input Monitoring and Accessibility
 
 ## License
 

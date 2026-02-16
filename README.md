@@ -43,19 +43,31 @@ swift build
 # Run tests
 swift test
 
-# Clean generated files
+# Run app (normal dev)
+swift run
+
+# Run app (lean dev: temporary build caches, auto-clean on exit)
+bash scripts/run_lean_dev.sh
+
+# Clean heavy build artifacts only
+bash scripts/clean_heavy_artifacts.sh
+
+# Full local reproducible-cache cleanup
+bash scripts/clean_all_local_caches.sh
+
+# Backward-compatible full cleanup alias
 bash scripts/clean.sh
 
 # Dependency vulnerability audit (OSV)
 python3 scripts/audit_dependencies.py
-
-# Run app
-swift run
 ```
 
 ## Maintenance
 
-- Use `bash scripts/clean.sh` to remove generated/local artifacts (`.build`, `.codex_audit`, `.DS_Store`, `__pycache__`) when the repo feels cluttered.
+- **Normal dev** (`swift run`): fastest repeated startup once caches are warm, but it grows `.build/` in the repo and may reuse shared SwiftPM caches under `~/Library/Caches/org.swift.swiftpm`.
+- **Lean dev** (`bash scripts/run_lean_dev.sh`): runs with temporary scratch/module cache directories and removes them automatically when the app exits. This keeps the repo small at the cost of slower startup/build.
+- Use `bash scripts/clean_heavy_artifacts.sh` to remove large project-local build outputs (`.build`, `.swiftpm`) while preserving shared dependency caches for better speed later.
+- Use `bash scripts/clean_all_local_caches.sh` (or `bash scripts/clean.sh`) for a fuller reproducible cleanup (`.build`, `.swiftpm`, `.codex_audit`, `.DS_Store`, `__pycache__`).
 - After cleaning, run `swift build` and `swift test` to regenerate build outputs and confirm everything is healthy.
 - Use `python3 scripts/audit_dependencies.py` occasionally to check pinned dependency revisions against OSV.
 
